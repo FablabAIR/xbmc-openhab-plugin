@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="hello.world.men" name="HelloWord" version="1" provider-name="biajf">
+  <requires>
+    <import addon="xbmc.python" version="2.1.0"/>
+    <import addon="xbmc.gui" version="2.11"/>
+    <import addon="gpodder.api"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="addon.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.python.pluginsource" library="gpodderxbmc.py">
+<provides>audio video</provides>
+</extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Hello World script provides some basic examples on how to create your first script.</summary>
+    <description lang="en">Hello World script provides some basic examples on how to create your first script
+ and hopefully will increase the number of XBMC users to start creating their own addons.</description>
+    <disclaimer lang="en"></disclaimer>
+    <language></language>
+    <platform>all</platform>
+    <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+    <forum></forum>
+    <website></website>
+    <email></email>
+    <source></source>
+  </extension>
+</addon>
