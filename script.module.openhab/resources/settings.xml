@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Document : settings.xml
+Created on : September 9, 2010, 1:45 PM
+Author : Ashley Kitson
+Description: Settings for gpodder example
+(XBMC Addons Developer Guide example 2)
+-->
+<settings>
+  <setting id="host" type="ipaddress" label="IP OpenHabServer" default="" />
+  <setting id="port" type="boolean" label="OpenHabServer port" default="" />
+</settings>
