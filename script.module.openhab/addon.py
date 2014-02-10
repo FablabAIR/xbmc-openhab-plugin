@@ -1,5 +1,6 @@
 import xbmcplugin
 import xbmcgui
+import xbmcaddon
 import sys
 import urllib2
 import json
@@ -8,11 +9,17 @@ import json
 thisPlugin = int(sys.argv[1])
 
 #Variable a recuperer dans les settings de XBMC 
-host ='localhost' 
-port ='8080'
-name ='demo'
-id = 'demo'
+#host ='localhost' 
+#port ='8080'
+#name ='demo'
+#id = 'demo'
 
+#Recuperation auto
+__addon__      = xbmcaddon.Addon()
+host = __addon__.getSetting('host')
+port = __addon__.getSetting('port')
+name = __addon__.getSetting('name')
+id = __addon__.getSetting('id')
 
 #Return Json from URL
 def getJson(url) :
