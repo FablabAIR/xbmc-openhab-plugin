@@ -8,12 +8,22 @@ import urllib
 import urlparse
 
 
-class Value:
-    #recupere label et url de l'item
-    def __init__(self, label, url, id):
+class Node:
+    #recupere info des etages
+    def __init__(self, label, url, id, leaf):
         self.label = label
         self.url = url
         self.id = id
+        self.leaf = False
+
+class Leaf:
+    #recupere info des etages
+    def __init__(self, label, url, state, typeItem):
+        self.label = label
+        self.url = url
+        self.state = state
+        self.typeItem = typeItem
+
 
 
 ####Fonctions ##########
@@ -44,22 +54,33 @@ def createListingSite(data):
         widgets2.append(w['widget'])
     
     for floor in widgets2[0]:
-        tmp_value = Value(floor['label'],floor['item']['link'], floor['linkedPage']['id'])
-        listing.append(tmp_value)
+        tmp_floor = Node(floor['label'],floor['item']['link'], floor['linkedPage']['id'], floor['linkedPage']['leaf'])
+        listing.append(tmp_floor)
 
     return listing
     
 
-def createListingRoom(data):
+def createListingFloor(data):
 	listing = []
 	widgets = data['widget']
 
 	for w in widgets:
-		listing.append(Value(w['label'],w['item']['link'], w['linkedPage']['id']))
+		listing.append(Node(w['label'],w['item']['link'], w['linkedPage']['id'], w['linkedPage']['leaf']))
 
 	return listing
 
+def createListingRoom(data):
+    listing = []
+    w = data['widget']
+    listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
 
+    # for w in widgets:
+    #     print(w['item']['link'])
+    #     print(w['item']['state'])
+    #     print(w['item']['type'])
+    #     listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
+
+    return listing
 
 def sendToXbmc(listing):
     global thisPlugin
@@ -111,7 +132,10 @@ if mode is None:
     listing = createListingSite(siteMap)
     
     for item in listing:
-        url = build_url({'mode': 'floor', 'id': item.id})
+        if(item.leaf == False):
+            url = build_url({'mode': 'floor', 'id': item.id})
+        else:
+            url = build_url({'mode': 'room', 'id': item.id})
         listItem = xbmcgui.ListItem(item.label)
         xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
     xbmcplugin.endOfDirectory(thisPlugin)
@@ -119,7 +143,7 @@ if mode is None:
 elif mode[0] == 'floor':
     id = args['id'][0]
     floor = getJsonSiteMap(name,id)
-    listing = createListingRoom(floor)
+    listing = createListingFloor(floor)
 
     for item in listing:
         url = build_url({'mode': 'room', 'id': item.id})
@@ -129,11 +153,11 @@ elif mode[0] == 'floor':
 
 elif mode[0] == 'room':
     id = args['id'][0]
-    room = getJsonItem(name)
+    room = getJsonSiteMap(name, id)
     listing = createListingRoom(room)
 
     for item in listing:
-        url = build_url({'mode': 'room', 'name': item.name})
-        listItem = xbmcgui.ListItem(item)
-        xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+        #url = build_url({'mode': 'room', 'id': item.id})
+        listItem = xbmcgui.ListItem(item.label)
+        xbmcplugin.addDirectoryItem(handle=thisPlugin, url='',listitem=listItem, isFolder=False)
     xbmcplugin.endOfDirectory(thisPlugin)
