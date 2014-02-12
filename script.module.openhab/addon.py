@@ -14,7 +14,7 @@ class Node:
         self.label = label
         self.url = url
         self.id = id
-        self.leaf = False
+        self.leaf = leaf
 
 class Leaf:
     #recupere info des etages
@@ -58,26 +58,31 @@ def createListingSite(data):
         listing.append(tmp_floor)
 
     return listing
-    
+
 
 def createListingFloor(data):
 	listing = []
 	widgets = data['widget']
 
+	# if type(widgets) is list:
 	for w in widgets:
-		listing.append(Node(w['label'],w['item']['link'], w['linkedPage']['id'], w['linkedPage']['leaf']))
+			listing.append(Node(w['label'],w['item']['link'], w['linkedPage']['id'], w['linkedPage']['leaf']))
+	# else :
+	# 	listing.append(Node(widgets['label'],widgets['item']['link'], widgets['link']['id'], widgets['linkedPage']['leaf']))
 
 	return listing
 
 def createListingRoom(data):
     listing = []
-    w = data['widget']
-    listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
+    widgets = data['widget']
+
+    if type(widgets) is list:
+        for w in widgets:
+            listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
+    else :   
+        listing.append(Leaf(widgets['label'],widgets['item']['link'], widgets['item']['state'], widgets['item']['type']))
 
     # for w in widgets:
-    #     print(w['item']['link'])
-    #     print(w['item']['state'])
-    #     print(w['item']['type'])
     #     listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
 
     return listing
@@ -113,7 +118,7 @@ host = __addon__.getSetting('host')
 port = __addon__.getSetting('port')
 name = __addon__.getSetting('name')
 id = __addon__.getSetting('id')
-
+DEBUG = __addon__.getSetting('Debug')
 #xbmc.executebuiltin('XBMC.RunScript("C:/Users/Jeff/AppData/Roaming/XBMC/addons/script.module.openhab/resources/lib/script.py")')
 #siteMap = getJsonSiteMap(name,id);
 #listing = createListing(siteMap)
@@ -141,6 +146,7 @@ if mode is None:
     xbmcplugin.endOfDirectory(thisPlugin)
  
 elif mode[0] == 'floor':
+    print('Floor')
     id = args['id'][0]
     floor = getJsonSiteMap(name,id)
     listing = createListingFloor(floor)
@@ -152,6 +158,7 @@ elif mode[0] == 'floor':
     xbmcplugin.endOfDirectory(thisPlugin)
 
 elif mode[0] == 'room':
+    print('Room')
     id = args['id'][0]
     room = getJsonSiteMap(name, id)
     listing = createListingRoom(room)
