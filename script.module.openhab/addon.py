@@ -7,6 +7,15 @@ import json
 import urllib
 import urlparse
 
+
+class Value:
+    #recupere label et url de l'item
+    def __init__(self, label, url, id):
+        self.label = label
+        self.url = url
+        self.id = id
+
+
 ####Fonctions ##########
 #Return Json from URL
 def getJson(url) :
@@ -26,19 +35,31 @@ def getJsonItem(item) :
     url = 'http://'+host+':'+port+'/rest/items/'+item+'?type=json'
     return getJson(url)
 
+def createListingSite(data):
+    listing = []
+    widgets1 = data['widget']
+    widgets2 = []
 
-def createListing(data):
+    for w in widgets1:
+        widgets2.append(w['widget'])
+    
+    for floor in widgets2[0]:
+        tmp_value = Value(floor['label'],floor['item']['link'], floor['linkedPage']['id'])
+        listing.append(tmp_value)
+
+    return listing
+    
+
+def createListingRoom(data):
 	listing = []
-	widgets1 = data['widget']
-	widgets2 = []
+	widgets = data['widget']
 
-	for w in widgets1:
-		widgets2.append(w['widget'])
-
-	for floor in widgets2[0]:
-		listing.append(floor['label'])
+	for w in widgets:
+		listing.append(Value(w['label'],w['item']['link'], w['linkedPage']['id']))
 
 	return listing
+
+
 
 def sendToXbmc(listing):
     global thisPlugin
@@ -84,39 +105,35 @@ id = __addon__.getSetting('id')
 #xbmcplugin.setContent(addon_handle, 'movies')
 
 mode = args.get('mode', None)
- 
+
 if mode is None:
     siteMap = getJsonSiteMap(name,id)
-    listing = createListing(siteMap)
-    url = build_url({'mode': 'folder', 'foldername': 'Folder One'})
+    listing = createListingSite(siteMap)
+    
     for item in listing:
+        url = build_url({'mode': 'floor', 'id': item.id})
+        listItem = xbmcgui.ListItem(item.label)
+        xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+    xbmcplugin.endOfDirectory(thisPlugin)
+ 
+elif mode[0] == 'floor':
+    id = args['id'][0]
+    floor = getJsonSiteMap(name,id)
+    listing = createListingRoom(floor)
+
+    for item in listing:
+        url = build_url({'mode': 'room', 'id': item.id})
+        listItem = xbmcgui.ListItem(item.label)
+        xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+    xbmcplugin.endOfDirectory(thisPlugin)
+
+elif mode[0] == 'room':
+    id = args['id'][0]
+    room = getJsonItem(name)
+    listing = createListingRoom(room)
+
+    for item in listing:
+        url = build_url({'mode': 'room', 'name': item.name})
         listItem = xbmcgui.ListItem(item)
         xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
-
-    #url = build_url({'mode': 'folder', 'foldername': 'Folder One'})
-    #li = xbmcgui.ListItem('Folder One', iconImage='DefaultFolder.png')
-    #xbmcplugin.addDirectoryItem(handle=addon_handle, url=url,listitem=li, isFolder=True)
- 
-    #url = build_url({'mode': 'folder', 'foldername': 'Folder Two'})
-    #li = xbmcgui.ListItem('Folder Two', iconImage='DefaultFolder.png')
-    #xbmcplugin.addDirectoryItem(handle=addon_handle, url=url,listitem=li, isFolder=True)
- 
     xbmcplugin.endOfDirectory(thisPlugin)
- 
-elif mode[0] == 'folder':
-    #foldername = args['foldername'][0]
-    #url = 'http://localhost/some_video.mkv'
-    #li = xbmcgui.ListItem(foldername + ' Video', iconImage='DefaultVideo.png')
-    #xbmcplugin.addDirectoryItem(handle=addon_handle, url=url, listitem=li)
-    #xbmcplugin.endOfDirectory(addon_handle)
-    listing = []
-    item = getJsonItem('Temperature_FF_Office')
-    listing.append(item['state'])
-
-    url = build_url({'mode': 'folder', 'foldername': 'Folder Two'})
-    li = xbmcgui.ListItem(item['state'], iconImage='DefaultFolder.png')
-    xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=li, isFolder=True)
-    xbmcplugin.endOfDirectory(thisPlugin)
-    #for item in listing:
-    #    listItem = xbmcgui.ListItem(item)
-    #    xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
