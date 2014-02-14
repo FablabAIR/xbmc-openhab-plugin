@@ -13,7 +13,7 @@ __addon_id__ = 'script.togglebuttontest'
 import sys, os.path, xbmc, xbmcaddon
 addon_cfg = xbmcaddon.Addon(__addon_id__)
 __addon_path__ = addon_cfg.getAddonInfo('path')
-__library_path__ = os.path.join(__addon_path__, "resources/libs")
+__library_path__ = os.path.join(__addon_path__, "resources/lib")
 
 
 from pyxbmct.addonwindow import *
@@ -55,14 +55,22 @@ class MyWindow(AddonDialogWindow):
 		
 		
 	def set_active_controls(self, liste):
-		#
+		# RadioButton
+		self.radiobutton = RadioButton('Off')
+		self.placeControl(self.radiobutton, 1, 3)
+		self.connect(self.radiobutton, self.radio_update)
 		# List
 		self.list = List()
 		self.placeControl(self.list, 0.5, 0, 4, 4)
 		# Add items to the list
 		items = []
+		i=0
 		for item in liste:
 			items.append(item.label)
+			name = item.label+'_button'
+			name = RadioButton(item.label)
+			self.placeControl(name, i, i)
+			i=i+1
 		self.list.addItems(items)
 		# Connect the list to a function to display which list item is selected.
 		self.connect(self.list, lambda: xbmc.executebuiltin('Notification(Note!,%s selected.)' % self.list.getListItem(self.list.getSelectedPosition()).getLabel()))
@@ -77,6 +85,12 @@ class MyWindow(AddonDialogWindow):
 				self.list_item_label.setLabel('')
 		except (RuntimeError, SystemError):
 			pass
+	def radio_update(self):
+		# Update radiobutton caption on toggle
+		if self.radiobutton.isSelected():
+			self.radiobutton.setLabel('On')
+		else:
+			self.radiobutton.setLabel('Off')
 
 
 
