@@ -27,6 +27,8 @@ class Leaf:
 
 
 ####Fonctions ##########
+def log(str) :
+        print("################[D] "+str+" ################")
 #Return Json from URL
 def getJson(url) :
     json_string = urllib2.urlopen(url).read()
@@ -64,11 +66,8 @@ def createListingFloor(data):
 	listing = []
 	widgets = data['widget']
 
-	# if type(widgets) is list:
 	for w in widgets:
 			listing.append(Node(w['label'],w['item']['link'], w['linkedPage']['id'], w['linkedPage']['leaf']))
-	# else :
-	# 	listing.append(Node(widgets['label'],widgets['item']['link'], widgets['link']['id'], widgets['linkedPage']['leaf']))
 
 	return listing
 
@@ -81,9 +80,6 @@ def createListingRoom(data):
             listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
     else :   
         listing.append(Leaf(widgets['label'],widgets['item']['link'], widgets['item']['state'], widgets['item']['type']))
-
-    # for w in widgets:
-    #     listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type']))
 
     return listing
 
@@ -99,7 +95,6 @@ def build_url(query):
     return base_url + '?' + urllib.urlencode(query)
  
 #Main 
-
 #Global 
  
 base_url = sys.argv[0]
@@ -119,25 +114,16 @@ port = __addon__.getSetting('port')
 name = __addon__.getSetting('name')
 id = __addon__.getSetting('id')
 DEBUG = __addon__.getSetting('Debug')
-#xbmc.executebuiltin('XBMC.RunScript("C:/Users/Jeff/AppData/Roaming/XBMC/addons/script.module.openhab/resources/lib/script.py")')
-#siteMap = getJsonSiteMap(name,id);
-#listing = createListing(siteMap)
-#item = getJsonItem('Temperature_FF_Office')
-#print(item['state'])
-#listing.append(item['state'])
-#sendToXbmc(listing)
-
- 
-#xbmcplugin.setContent(addon_handle, 'movies')
-
 mode = args.get('mode', None)
 
+
 if mode is None:
+    log("Init")
     siteMap = getJsonSiteMap(name,id)
     listing = createListingSite(siteMap)
     
     for item in listing:
-        if(item.leaf == False):
+        if(item.leaf == 'false'):
             url = build_url({'mode': 'floor', 'id': item.id})
         else:
             url = build_url({'mode': 'room', 'id': item.id})
@@ -146,7 +132,7 @@ if mode is None:
     xbmcplugin.endOfDirectory(thisPlugin)
  
 elif mode[0] == 'floor':
-    print('Floor')
+    log("Floor")
     id = args['id'][0]
     floor = getJsonSiteMap(name,id)
     listing = createListingFloor(floor)
@@ -158,13 +144,12 @@ elif mode[0] == 'floor':
     xbmcplugin.endOfDirectory(thisPlugin)
 
 elif mode[0] == 'room':
-    print('Room')
+    log("Room")
     id = args['id'][0]
     room = getJsonSiteMap(name, id)
     listing = createListingRoom(room)
 
     for item in listing:
-        #url = build_url({'mode': 'room', 'id': item.id})
         listItem = xbmcgui.ListItem(item.label)
         xbmcplugin.addDirectoryItem(handle=thisPlugin, url='',listitem=listItem, isFolder=False)
     xbmcplugin.endOfDirectory(thisPlugin)
