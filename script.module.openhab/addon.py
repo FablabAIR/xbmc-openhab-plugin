@@ -7,6 +7,16 @@ import json
 import urllib
 import urlparse
 
+__addon_id__ = 'script.togglebuttontest'
+
+#Gather addon information
+import sys, os.path, xbmc, xbmcaddon
+addon_cfg = xbmcaddon.Addon(__addon_id__)
+__addon_path__ = addon_cfg.getAddonInfo('path')
+__library_path__ = os.path.join(__addon_path__, "resources/libs")
+
+
+from pyxbmct.addonwindow import *
 
 class Node:
     #recupere info des etages
@@ -23,6 +33,50 @@ class Leaf:
         self.url = url
         self.state = state
         self.typeItem = typeItem
+
+class MyWindow(AddonDialogWindow):
+
+	def __init__(self, title, liste):
+		# You need to call base class' constructor.
+		super(MyWindow, self).__init__(title)
+		# Set the window width, height and the grid resolution: 2 rows, 3 columns.
+		self.setGeometry(850, 550, 9,4)
+		# Create a button.
+		button = Button('Valider')
+		# Place the button on the window grid.
+		self.placeControl(button, 8,1.5)
+		# Set initial focus on the button.
+		self.setFocus(button)
+		# Connect the button to a function.
+		self.connect(button, self.close)
+		self.set_active_controls(liste)
+		# Connect a key action to a function.
+		self.connect(ACTION_NAV_BACK, self.close)
+		
+		
+	def set_active_controls(self, liste):
+		#
+		# List
+		self.list = List()
+		self.placeControl(self.list, 0.5, 0, 4, 4)
+		# Add items to the list
+		items = []
+		for item in liste:
+			items.append(item.label)
+		self.list.addItems(items)
+		# Connect the list to a function to display which list item is selected.
+		self.connect(self.list, lambda: xbmc.executebuiltin('Notification(Note!,%s selected.)' % self.list.getListItem(self.list.getSelectedPosition()).getLabel()))
+		# Connect key and mouse events for list navigation feedback.
+		#self.connectEventList([ACTION_MOVE_DOWN, ACTION_MOVE_UP, ACTION_MOUSE_WHEEL_DOWN, ACTION_MOUSE_WHEEL_UP, ACTION_MOUSE_MOVE],self.list_update)
+	def list_update(self):
+		# Update list_item label when navigating through the list.
+		try:
+			if self.getFocus() == self.list:
+				self.list_item_label.setLabel(self.list.getListItem(self.list.getSelectedPosition()).getLabel())
+			else:
+				self.list_item_label.setLabel('')
+		except (RuntimeError, SystemError):
+			pass
 
 
 
@@ -138,18 +192,22 @@ elif mode[0] == 'floor':
     listing = createListingFloor(floor)
 
     for item in listing:
-        url = build_url({'mode': 'room', 'id': item.id})
+        url = build_url({'mode': 'room', 'id': item.id, 'label':item.label})
         listItem = xbmcgui.ListItem(item.label)
         xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
     xbmcplugin.endOfDirectory(thisPlugin)
 
 elif mode[0] == 'room':
-    log("Room")
-    id = args['id'][0]
-    room = getJsonSiteMap(name, id)
-    listing = createListingRoom(room)
-
-    for item in listing:
-        listItem = xbmcgui.ListItem(item.label)
-        xbmcplugin.addDirectoryItem(handle=thisPlugin, url='',listitem=listItem, isFolder=False)
-    xbmcplugin.endOfDirectory(thisPlugin)
+	log("Room")
+	id = args['id'][0]
+	label = args['label'][0]
+	room = getJsonSiteMap(name, id)
+	listing = createListingRoom(room)
+	#list = []
+	#for item in listing:
+	#	listItem = xbmcgui.ListItem(item.label)
+	#	xbmcplugin.addDirectoryItem(handle=thisPlugin, url='',listitem=listItem, isFolder=False)
+		#list.append(item.label)
+	window = MyWindow(label, listing)
+	window.doModal() 
+	#xbmcplugin.endOfDirectory(thisPlugin)
