@@ -39,12 +39,12 @@ class MyWindow(AddonDialogWindow):
 	def __init__(self, title, liste):
 		# You need to call base class' constructor.
 		super(MyWindow, self).__init__(title)
-		# Set the window width, height and the grid resolution: 2 rows, 3 columns.
-		self.setGeometry(850, 550, 9,4)
+		# Set the window width, height and the grid resolution: 9 rows, 4 columns.
+		self.setGeometry(850, 550, 10,4)
 		# Create a button.
 		button = Button('Valider')
 		# Place the button on the window grid.
-		self.placeControl(button, 8,1.5)
+		self.placeControl(button, 9,3)
 		# Set initial focus on the button.
 		self.setFocus(button)
 		# Connect the button to a function.
@@ -55,36 +55,25 @@ class MyWindow(AddonDialogWindow):
 		
 		
 	def set_active_controls(self, liste):
-		# RadioButton
+		# exemple RadioButton
 		self.radiobutton = RadioButton('Off')
-		self.placeControl(self.radiobutton, 1, 3)
+		self.placeControl(self.radiobutton, 6, 3)
 		self.connect(self.radiobutton, self.radio_update)
-		# List
-		self.list = List()
-		self.placeControl(self.list, 0.5, 0, 4, 4)
-		# Add items to the list
-		items = []
-		i=0
+		
+		self.i=1
 		for item in liste:
-			items.append(item.label)
-			name = item.label+'_button'
-			name = RadioButton(item.label)
-			self.placeControl(name, i, i)
-			i=i+1
-		self.list.addItems(items)
-		# Connect the list to a function to display which list item is selected.
-		self.connect(self.list, lambda: xbmc.executebuiltin('Notification(Note!,%s selected.)' % self.list.getListItem(self.list.getSelectedPosition()).getLabel()))
-		# Connect key and mouse events for list navigation feedback.
-		#self.connectEventList([ACTION_MOVE_DOWN, ACTION_MOVE_UP, ACTION_MOUSE_WHEEL_DOWN, ACTION_MOUSE_WHEEL_UP, ACTION_MOUSE_MOVE],self.list_update)
-	def list_update(self):
-		# Update list_item label when navigating through the list.
-		try:
-			if self.getFocus() == self.list:
-				self.list_item_label.setLabel(self.list.getListItem(self.list.getSelectedPosition()).getLabel())
+			label_label = Label(item.label)
+			self.name = str(self.i)
+			print(self.name)
+			self.name = RadioButton('On')
+			if(self.i<7):
+				self.placeControl(label_label, self.i, 0)
+				self.placeControl(self.name, self.i, 1)
 			else:
-				self.list_item_label.setLabel('')
-		except (RuntimeError, SystemError):
-			pass
+				self.placeControl(label_label, self.i, 2)
+				self.placeControl(self.name, self.i, 3)
+			self.connect(self.name, self.radio_update)
+			self.i=self.i+1
 	def radio_update(self):
 		# Update radiobutton caption on toggle
 		if self.radiobutton.isSelected():
