@@ -22,9 +22,8 @@ def getJsonItem(item) :
 	
 def updateItem(item):
 	data = item.state
-	data = json.dumps(data)
 	url = item.link
-	req = urllib2.Request(url, data, {'Content-Type': 'application/json'})
+	req = urllib2.Request(url, data, {'Content-Type': 'text/plain'})
 	f = urllib2.urlopen(req)
 	response = f.read()
 	f.close()
@@ -82,4 +81,3 @@ class DateTime(Item):
 	def __init__(self, state, id, label, link):
 		Item.__init__(self, id, label, link)
 		self.state=state
-	

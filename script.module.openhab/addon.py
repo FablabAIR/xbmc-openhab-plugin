@@ -11,7 +11,7 @@ import urlparse
 import openhab
 import gui
 
-# Recuperer info des etages et des pieces
+# To recover info of floors and rooms
 class Node:
     def __init__(self, label, url, id, leaf):
         self.label = label
@@ -19,11 +19,11 @@ class Node:
         self.id = id
         self.leaf = leaf
 
-# Recuperer info des capteurs
-class Leaf:
+# To recover info of sentors
+class OpenHabItem:
 	def __init__(self, label, url, state, typeItem, id):
-		self.typeItem = self.stateLeaf(label, url, state, typeItem, id)
-	def stateLeaf(self, label, link, state, typeItem, id):
+		self.typeItem = self.defItem(label, url, state, typeItem, id)
+	def defItem(self, label, link, state, typeItem, id):
 		if typeItem == "SwitchItem":
 			return openhab.Switch(state, id, label, link)
 		elif typeItem == "RollerShutterItem":
@@ -79,9 +79,9 @@ def createListingRoom(data):
 
     if type(widgets) is list:
         for w in widgets:
-            listing.append(Leaf(w['label'],w['item']['link'], w['item']['state'], w['item']['type'], w['widgetId']))
+            listing.append(OpenHabItem(w['label'],w['item']['link'], w['item']['state'], w['item']['type'], w['widgetId']))
     else :   
-        listing.append(Leaf(widgets['label'],widgets['item']['link'], widgets['item']['state'], widgets['item']['type'], w['widgetId']))
+        listing.append(OpenHabItem(widgets['label'],widgets['item']['link'], widgets['item']['state'], widgets['item']['type'], w['widgetId']))
 
     return listing
      
@@ -138,5 +138,6 @@ elif mode[0] == 'room':
 	label = args['label'][0]
 	room = openhab.getJsonSiteMap(host, port, name, id)
 	listing = createListingRoom(room)
-	window = gui.MyWindow(label, listing)
-	window.doModal() 
+	#window = gui.MyWindow(label, listing)
+	window = gui.Test("test.xml", os.getcwd(), "Default", "720p")
+	window.doModal()
