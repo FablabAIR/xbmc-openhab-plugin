@@ -15,6 +15,7 @@
 			  <width>250</width>
 			  <height>200</height>
 			  <visible>true</visible>
+			  <label> splinnnnnnnnnnnn </label>
 			  <colordiffuse>FFFFFFFF</colordiffuse>
 			  <textureup>myuptexture.png</textureup>
 			  <textureupfocus>myupfocustexture.png</textureupfocus>
@@ -26,9 +27,9 @@
 			  <disabledcolor>80FFFFFF</disabledcolor>
 			  <align></align>
 			  <aligny></aligny>
-			  <textoffsetx></textoffsetx>
-			  <textoffsety></textoffsety>
-			  <pulseonselect></pulseonselect>
+			  <textoffsetx> u </textoffsetx>
+			  <textoffsety> i </textoffsety>
+			  <pulseonselect> o </pulseonselect>
 			  <onup>2</onup>
 			  <ondown>3</ondown>
 			  <onleft>1</onleft>

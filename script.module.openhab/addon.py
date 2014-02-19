@@ -138,6 +138,8 @@ elif mode[0] == 'room':
 	label = args['label'][0]
 	room = openhab.getJsonSiteMap(host, port, name, id)
 	listing = createListingRoom(room)
-	#window = gui.MyWindow(label, listing)
-	window = gui.Test("test.xml", os.getcwd(), "Default", "720p")
+	window = gui.MyWindow(label, listing)
+	#window = gui.Test("test.xml", __addon__.getAddonInfo('path'), "Default", "720p")
 	window.doModal()
+	#window.show()
+	del window

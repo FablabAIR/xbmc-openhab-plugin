@@ -21,8 +21,8 @@ def getJsonItem(item) :
     return getJson(url)
 	
 def updateItem(item):
-	data = item.state
-	url = item.link
+	data = item.typeItem.state
+	url = item.typeItem.link
 	req = urllib2.Request(url, data, {'Content-Type': 'text/plain'})
 	f = urllib2.urlopen(req)
 	response = f.read()
@@ -46,7 +46,7 @@ class RollerShutter(Item):
 		Item.__init__(self, id, label, link)
 		self.state=state
 	
-# number value : int
+# number value : int (affichage)
 class Number(Item):
 	def __init__(self, state, id, label, link):
 		Item.__init__(self, id, label, link)
@@ -64,7 +64,7 @@ class Dimmer(Item):
 		Item.__init__(self, id, label, link)
 		self.state=state
 	
-# color value : RGB
+# color value : RGB (triple slider)
 class Color(Item):
 	def __init__(self, state, id, label, link):
 		Item.__init__(self, id, label, link)
