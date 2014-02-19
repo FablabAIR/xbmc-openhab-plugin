@@ -25,11 +25,11 @@ class SliderUI:
 	def __init__(self, item):
 		self.item = item
 		self.component = Slider()
-		self.component.setPercent(float(item.typeItem.state))
+		self.label = Label(str(item.typeItem.state), alignment=ALIGN_CENTER)
 	def update(self):
 		try:
 			self.item.typeItem.state = str(self.component.getPercent())
-			print self.item.typeItem.state
+			self.label.setLabel('%.1f' % self.component.getPercent())
 			openhab.updateItem(self.item)
 		except (RuntimeError, SystemError):
 			pass
@@ -90,6 +90,8 @@ class MyWindow(AddonDialogWindow):
 				self.placeControl(label_label, self.i, 2)
 				self.placeControl(self.tmp.component, self.i, 3)
 			if self.tmp.__class__.__name__ == "SliderUI":
+				self.placeControl(self.tmp.label, self.i, 2.5)
+				self.tmp.component.setPercent(float(item.typeItem.state))
 				self.connectEventList([ACTION_MOVE_LEFT, ACTION_MOVE_RIGHT, ACTION_MOUSE_DRAG], self.tmp.update)
 			else:
 				self.connect(self.tmp.component, self.tmp.update)
