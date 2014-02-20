@@ -25,6 +25,8 @@ class SliderUI:
 	def __init__(self, item):
 		self.item = item
 		self.component = Slider()
+		if item.typeItem.state == "Uninitialized":
+			item.typeItem.state = 0
 		self.label = Label(str(item.typeItem.state), alignment=ALIGN_CENTER)
 	def update(self):
 		try:
