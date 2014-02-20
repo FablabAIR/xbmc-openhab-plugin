@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+
+  <!-- English -->
+  <!-- Script Settings -->
+
+	<string id="30000">Server OpenHab address</string>
+	<string id="30001">Server OpenHab port</string>
+	<string id="30002">Server OpenHab name</string>
+	<string id="30003">Server OpenHab id</string>
+	<string id="30004">An error occured</string>
+	<string id="30005">Connection not available</string>
+	<string id="30006">File or Directory not found</string>
+</strings>
