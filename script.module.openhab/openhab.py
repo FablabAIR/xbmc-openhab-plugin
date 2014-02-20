@@ -52,7 +52,7 @@ class Number(Item):
 		Item.__init__(self, id, label, link)
 		self.state=state
 
-# contact value : open/close
+# contact value : open/close (affichage)
 class Contact(Item):
 	def __init__(self, state, id, label, link):
 		Item.__init__(self, id, label, link)

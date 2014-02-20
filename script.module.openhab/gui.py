@@ -33,6 +33,14 @@ class SliderUI:
 			openhab.updateItem(self.item)
 		except (RuntimeError, SystemError):
 			pass
+
+class LabelUI:
+	def __init__(self, item):
+		self.item = item
+		self.component = Label(self.item.typeItem.state)
+	def update(self):
+		pass
+
 class Edit:
 	def __init__(self, label):
 		self.label = label
@@ -45,17 +53,6 @@ class Edit:
 			self.r.setLabel('Off')
 			openhab.updateItem(openhab.Switch('OFF', '', 'tutu aime les pommes', self.item.typeItem.link))
 			
-class String:
-	def __init__(self, label):
-		self.label = label
-		self.edit = 0
-	def update(self):
-		if self.r.isSelected():
-			self.r.setLabel('On')
-			openhab.updateItem(openhab.Switch('ON', '', 'tutu aime les pommes', self.item.typeItem.link))
-		else:
-			self.r.setLabel('Off')
-			openhab.updateItem(openhab.Switch('OFF', '', 'tutu aime les pommes', self.item.typeItem.link))
 
 class MyWindow(AddonDialogWindow):
 
@@ -89,28 +86,32 @@ class MyWindow(AddonDialogWindow):
 			else:
 				self.placeControl(label_label, self.i, 2)
 				self.placeControl(self.tmp.component, self.i, 3)
+			
 			if self.tmp.__class__.__name__ == "SliderUI":
-				self.placeControl(self.tmp.label, self.i, 2.5)
+				self.placeControl(self.tmp.label, self.i,0.38)
 				self.tmp.component.setPercent(float(item.typeItem.state))
 				self.connectEventList([ACTION_MOVE_LEFT, ACTION_MOVE_RIGHT, ACTION_MOUSE_DRAG], self.tmp.update)
+			elif self.tmp.__class__.__name__ == "LabelUI":
+				pass
 			else:
 				self.connect(self.tmp.component, self.tmp.update)
 			self.i=self.i+1
 			
 	def getUI(self, item):
+		print(item.typeItem.__class__.__name__)
 		if item.typeItem.__class__.__name__ == "Switch":
 			return ButtonSwitch(item)
 		if item.typeItem.__class__.__name__ == "RollerShutter":
 			return SliderUI(item)
-		# if item.typeItem.__class__.__name__ == "Number":
-			# return String(item)
-		# if item.typeItem.__class__.__name__ == "Contact":
-			# return String(item)
+		if item.typeItem.__class__.__name__ == "Number":
+			return LabelUI(item)
+		if item.typeItem.__class__.__name__ == "Contact":
+			return LabelUI(item)
 		if item.typeItem.__class__.__name__ == "Dimmer":
 			return SliderUI(item)
 		# if item.typeItem.__class__.__name__ == "Color":
 			# return SliderTriple(item)
-		# if item.typeItem.__class__.__name__ == "DateTime":
-			# return String(item)
+		if item.typeItem.__class__.__name__ == "DateTime":
+			return LabelUI(item)
 		else:
-			return ButtonSwitch(item)
+			return LabelUI(item)

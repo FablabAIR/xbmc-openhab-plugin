@@ -24,9 +24,10 @@ class OpenHabItem:
 	def __init__(self, label, url, state, typeItem, id):
 		self.typeItem = self.defItem(label, url, state, typeItem, id)
 	def defItem(self, label, link, state, typeItem, id):
+		print(typeItem)
 		if typeItem == "SwitchItem":
 			return openhab.Switch(state, id, label, link)
-		elif typeItem == "RollerShutterItem":
+		elif typeItem == "RollershutterItem":
 			return openhab.RollerShutter(state, id, label, link)
 		elif typeItem == "NumberItem":
 			return openhab.Number(state, id, label, link)
