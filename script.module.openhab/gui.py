@@ -21,14 +21,50 @@ class ButtonSwitch:
 			self.item.typeItem.state = "OFF"
 			openhab.updateItem(self.item)
 		
+class ButtonNumber:
+	def __init__(self, item):
+		self.item = item
+		self.component = Button(self.item.typeItem.state)
+	def update(self):
+		if self.item.typeItem.state == "Uninitialized":
+			self.component.setLabel('0')
+			self.item.typeItem.state = "0"
+			openhab.updateItem(self.item)
+		elif self.item.typeItem.state == "0":
+			self.component.setLabel('25')
+			self.item.typeItem.state = "25"
+			openhab.updateItem(self.item)
+		elif self.item.typeItem.state == "25":
+			self.component.setLabel('50')
+			self.item.typeItem.state = "50"
+			openhab.updateItem(self.item)
+		elif self.item.typeItem.state == "50":
+			self.component.setLabel('75')
+			self.item.typeItem.state = "75"
+			openhab.updateItem(self.item)
+		elif self.item.typeItem.state == "75":
+			self.component.setLabel('100')
+			self.item.typeItem.state = "100"
+			openhab.updateItem(self.item)
+		elif self.item.typeItem.state == "100":
+			self.component.setLabel('0')
+			self.item.typeItem.state = "0"
+			openhab.updateItem(self.item)
+		else:
+			self.component.setLabel('100')
+			self.item.typeItem.state = "100"
+			openhab.updateItem(self.item)
+		
 class SliderUI:
 	def __init__(self, item):
 		self.item = item
 		self.component = Slider()
 		if item.typeItem.state == "Uninitialized":
-			item.typeItem.state = 0
+			self.item.typeItem.state = 0.0
+			print 'IF'
 		self.label = Label(str(item.typeItem.state), alignment=ALIGN_CENTER)
 	def update(self):
+		print 'UPDATE'
 		try:
 			self.item.typeItem.state = str(self.component.getPercent())
 			self.label.setLabel('%.1f' % self.component.getPercent())
@@ -82,12 +118,12 @@ class MyWindow(AddonDialogWindow):
 		for item in list:
 			label_label = Label(item.typeItem.label)
 			self.tmp = self.getUI(item)
-			if(self.i<7):
+			if(self.i<8):
 				self.placeControl(label_label, self.i, 0)
 				self.placeControl(self.tmp.component, self.i, 1)
 			else:
-				self.placeControl(label_label, self.i, 2)
-				self.placeControl(self.tmp.component, self.i, 3)
+				self.placeControl(label_label, self.i%8+1, 2.25)
+				self.placeControl(self.tmp.component, self.i%8+1, 3.25)
 			
 			if self.tmp.__class__.__name__ == "SliderUI":
 				self.placeControl(self.tmp.label, self.i,0.38)
@@ -104,13 +140,13 @@ class MyWindow(AddonDialogWindow):
 		if item.typeItem.__class__.__name__ == "Switch":
 			return ButtonSwitch(item)
 		if item.typeItem.__class__.__name__ == "RollerShutter":
-			return SliderUI(item)
+			return ButtonNumber(item)
 		if item.typeItem.__class__.__name__ == "Number":
 			return LabelUI(item)
 		if item.typeItem.__class__.__name__ == "Contact":
 			return LabelUI(item)
 		if item.typeItem.__class__.__name__ == "Dimmer":
-			return SliderUI(item)
+			return ButtonNumber(item)
 		# if item.typeItem.__class__.__name__ == "Color":
 			# return SliderTriple(item)
 		if item.typeItem.__class__.__name__ == "DateTime":

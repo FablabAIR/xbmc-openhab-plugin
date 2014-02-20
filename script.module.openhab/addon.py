@@ -82,7 +82,7 @@ def createListingRoom(data):
         for w in widgets:
             listing.append(OpenHabItem(w['label'],w['item']['link'], w['item']['state'], w['item']['type'], w['widgetId']))
     else :   
-        listing.append(OpenHabItem(widgets['label'],widgets['item']['link'], widgets['item']['state'], widgets['item']['type'], w['widgetId']))
+        listing.append(OpenHabItem(widgets['label'],widgets['item']['link'], widgets['item']['state'], widgets['item']['type'], widgets['widgetId']))
 
     return listing
      
