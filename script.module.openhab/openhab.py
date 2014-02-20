@@ -5,9 +5,9 @@ import urllib2
 
 #Return Json from URL
 def getJson(url) :
-    json_string = urllib2.urlopen(url).read()
-    data = json.loads(json_string)
-    return data
+	json_string = urllib2.urlopen(url).read()
+	data = json.loads(json_string)
+	return data
 
 #return SiteMap
 def getJsonSiteMap(host, port, name, id):
@@ -81,3 +81,4 @@ class DateTime(Item):
 	def __init__(self, state, id, label, link):
 		Item.__init__(self, id, label, link)
 		self.state=state
+		

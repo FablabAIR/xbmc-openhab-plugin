@@ -10,6 +10,7 @@ import urllib
 import urlparse
 import openhab
 import gui
+import addon_util
 
 # To recover info of floors and rooms
 class Node:
@@ -105,42 +106,51 @@ name = __addon__.getSetting('name')
 id = __addon__.getSetting('id')
 DEBUG = __addon__.getSetting('Debug')
 mode = args.get('mode', None)
+langage = __addon__.getLocalizedString
 
 # Navigation dans les menus
 if mode is None:
-    log("Init")
-    siteMap = openhab.getJsonSiteMap(host, port, name, id)
-    listing = createListingSite(siteMap)
-    
-    for item in listing:
-        if(item.leaf == 'false'):
-            url = build_url({'mode': 'floor', 'id': item.id})
-        else:
-            url = build_url({'mode': 'room', 'id': item.id})
-        listItem = xbmcgui.ListItem(item.label)
-        xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
-    xbmcplugin.endOfDirectory(thisPlugin)
- 
-elif mode[0] == 'floor':
-    log("Floor")
-    id = args['id'][0]
-    floor = openhab.getJsonSiteMap(host, port, name, id)
-    listing = createListingFloor(floor)
+	log("Init")
+	try:
+		siteMap = openhab.getJsonSiteMap(host, port, name, id)
+		listing = createListingSite(siteMap)
+		for item in listing:
+			if(item.leaf == 'false'):
+				url = build_url({'mode': 'floor', 'id': item.id})
+			else:
+				url = build_url({'mode': 'room', 'id': item.id, 'label': item.label})
+			listItem = xbmcgui.ListItem(item.label)
+			xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+		xbmcplugin.endOfDirectory(thisPlugin)
+	except Exception as e:
+		addon_util.parseError(type(e).__name__, langage)
+		xbmc.executebuiltin("XBMC.StopScript("+__addon__.getAddonInfo('id')+")")
 
-    for item in listing:
-        url = build_url({'mode': 'room', 'id': item.id, 'label':item.label})
-        listItem = xbmcgui.ListItem(item.label)
-        xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
-    xbmcplugin.endOfDirectory(thisPlugin)
+elif mode[0] == 'floor':
+	try:
+		log("Floor")
+		id = args['id'][0]
+		floor = openhab.getJsonSiteMap(host, port, name, id)
+		listing = createListingFloor(floor)
+		for item in listing:
+			url = build_url({'mode': 'room', 'id': item.id, 'label':item.label})
+			listItem = xbmcgui.ListItem(item.label)
+			xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+		xbmcplugin.endOfDirectory(thisPlugin)
+	except Exception as e:
+		addon_util.parseError(type(e).__name__, langage)
+		xbmc.executebuiltin("XBMC.StopScript("+__addon__.getAddonInfo('id')+")")
 
 elif mode[0] == 'room':
-	log("Room")
-	id = args['id'][0]
-	label = args['label'][0]
-	room = openhab.getJsonSiteMap(host, port, name, id)
-	listing = createListingRoom(room)
-	window = gui.MyWindow(label, listing)
-	#window = gui.Test("test.xml", __addon__.getAddonInfo('path'), "Default", "720p")
-	window.doModal()
-	#window.show()
-	del window
+	try:
+		log("Room")
+		id = args['id'][0]
+		label = args['label'][0]
+		room = openhab.getJsonSiteMap(host, port, name, id)
+		listing = createListingRoom(room)
+		window = gui.MyWindow(label, listing)
+		window.doModal()
+		del window
+	except Exception as e:
+		addon_util.parseError(type(e).__name__, langage)
+		xbmc.executebuiltin("XBMC.StopScript("+__addon__.getAddonInfo('id')+")")
