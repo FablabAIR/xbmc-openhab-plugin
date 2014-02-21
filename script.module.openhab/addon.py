@@ -135,7 +135,7 @@ elif mode[0] == 'floor':
 		for item in listing:
 			url = build_url({'mode': 'room', 'id': item.id, 'label':item.label})
 			listItem = xbmcgui.ListItem(item.label)
-			xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+			xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=False)
 		xbmcplugin.endOfDirectory(thisPlugin)
 	except Exception as e:
 		addon_util.parseError(type(e).__name__, langage)
