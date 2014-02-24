@@ -12,18 +12,47 @@ import openhab
 import gui
 import addon_util
 
-# To recover info of floors and rooms
-class Node:
+
+class Floor:
+	## Constructor of Floor.
+	#@param self The object pointer.
+	#@param label The Floor label.
+	#@param url The Floor url.
+	#@param id The Floor id.
+	#@param leaf If the Floor is a leaf.
+	#@return Return a floor or room
+	#
+	#Used to save the floor and room list. If this is a room, the Floor is a leaf. 
     def __init__(self, label, url, id, leaf):
         self.label = label
         self.url = url
         self.id = id
         self.leaf = leaf
 
+
 # To recover info of sentors
 class OpenHabItem:
+		## Constructor of OpenHabItem.
+		#@param self The object pointer.
+		#@param label The item label.
+		#@param url The item url.
+		#@param state the item state.
+		#@param typeItem The type of item.
+		#@param id The item id.
+		#@return Return an OpenHab item
 	def __init__(self, label, url, state, typeItem, id):
 		self.typeItem = self.defItem(label, url, state, typeItem, id)
+        
+	## Documentation for defItem.
+		#@param self The object pointer.
+		#@param label The item label.
+		#@param url The item url.
+		#@param state the item state.
+		#@param typeItem The type of item.
+	#@param id The item id.
+	#@return Return the correspondant typeItem - Item
+	#
+	#
 	def defItem(self, label, link, state, typeItem, id):
 		print(typeItem)
 		if typeItem == "SwitchItem":
@@ -43,39 +72,47 @@ class OpenHabItem:
 		else:
 			return openhab.Switch(state, id, label, link)
 
-####Fonctions ##########
+####Functions ##########
 
-# Fonction log
-def log(str) :
-	print("################[D] "+str+" ################")
-
-# Creer la liste des etages
+## Documentation for createListingSite.
+	#@param data.
+	#@return Return the floor into list
+#
+#Create the floor list
 def createListingSite(data):
-    listing = []
-    widgets1 = data['widget']
-    widgets2 = []
+	listing = []
+	widgets1 = data['widget']
+	widgets2 = []
 
-    for w in widgets1:
-        widgets2.append(w['widget'])
-    
-    for floor in widgets2[0]:
-        tmp_floor = Node(floor['label'],floor['item']['link'], floor['linkedPage']['id'], floor['linkedPage']['leaf'])
-        listing.append(tmp_floor)
+	for w in widgets1:
+		widgets2.append(w['widget'])
 
-    return listing
+	for floor in widgets2[0]:
+		tmp_floor = Floor(floor['label'],floor['item']['link'], floor['linkedPage']['id'], floor['linkedPage']['leaf'])
+		listing.append(tmp_floor)
 
-# Creer la liste des pieces dans les etages
+	return listing
+
+## Documentation for createListingFloor.
+	#@param data.
+	#@return Return the room into list
+#
+#Create the room list
 def createListingFloor(data):
 	listing = []
 	widgets = data['widget']
 
 	for w in widgets:
-			listing.append(Node(w['label'],w['item']['link'], w['linkedPage']['id'], w['linkedPage']['leaf']))
-
+			listing.append(Floor(w['label'],w['item']['link'], w['linkedPage']['id'], w['linkedPage']['leaf']))
+	
 	return listing
 
-# Creer la liste des capteurs dans les pieces (item)
-def createListingRoom(data):
+## Documentation for createListingSensorRoom.
+	#@param data.
+	#@return Return the room sensor into list
+#
+#Create the room sensor into list
+def createListingSensorRoom(data):
     listing = []
     widgets = data['widget']
 
@@ -87,10 +124,7 @@ def createListingRoom(data):
 
     return listing
      
-# Construit l'url
-def build_url(query):
-    return base_url + '?' + urllib.urlencode(query)
- 
+
 #Main 
 
 # Info global 
@@ -104,36 +138,38 @@ host = __addon__.getSetting('host')
 port = __addon__.getSetting('port')
 name = __addon__.getSetting('name')
 id = __addon__.getSetting('id')
-DEBUG = __addon__.getSetting('Debug')
 mode = args.get('mode', None)
 langage = __addon__.getLocalizedString
 
+
 # Navigation dans les menus
 if mode is None:
-	log("Init")
+	addon_util.log("Init")
 	try:
 		siteMap = openhab.getJsonSiteMap(host, port, name, id)
 		listing = createListingSite(siteMap)
 		for item in listing:
 			if(item.leaf == 'false'):
-				url = build_url({'mode': 'floor', 'id': item.id})
+				url = addon_util.build_url({'mode': 'floor', 'id': item.id},base_url)
+				listItem = xbmcgui.ListItem(item.label)
+				xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
 			else:
-				url = build_url({'mode': 'room', 'id': item.id, 'label': item.label})
-			listItem = xbmcgui.ListItem(item.label)
-			xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=True)
+				url = addon_util.build_url({'mode': 'room', 'id': item.id, 'label': item.label},base_url)
+				listItem = xbmcgui.ListItem(item.label)
+				xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=False)
 		xbmcplugin.endOfDirectory(thisPlugin)
 	except Exception as e:
 		addon_util.parseError(type(e).__name__, langage)
 		xbmc.executebuiltin("XBMC.StopScript("+__addon__.getAddonInfo('id')+")")
 
 elif mode[0] == 'floor':
+	addon_util.log("Floor")
 	try:
-		log("Floor")
 		id = args['id'][0]
 		floor = openhab.getJsonSiteMap(host, port, name, id)
 		listing = createListingFloor(floor)
 		for item in listing:
-			url = build_url({'mode': 'room', 'id': item.id, 'label':item.label})
+			url = addon_util.build_url({'mode': 'room', 'id': item.id, 'label':item.label},base_url)
 			listItem = xbmcgui.ListItem(item.label)
 			xbmcplugin.addDirectoryItem(handle=thisPlugin, url=url,listitem=listItem, isFolder=False)
 		xbmcplugin.endOfDirectory(thisPlugin)
@@ -142,12 +178,12 @@ elif mode[0] == 'floor':
 		xbmc.executebuiltin("XBMC.StopScript("+__addon__.getAddonInfo('id')+")")
 
 elif mode[0] == 'room':
+	addon_util.log("Room")
 	try:
-		log("Room")
 		id = args['id'][0]
 		label = args['label'][0]
 		room = openhab.getJsonSiteMap(host, port, name, id)
-		listing = createListingRoom(room)
+		listing = createListingSensorRoom(room)
 		window = gui.MyWindow(label, listing)
 		window.doModal()
 		del window
