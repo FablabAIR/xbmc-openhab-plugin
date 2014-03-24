@@ -184,7 +184,7 @@ elif mode[0] == 'room':
 		label = args['label'][0]
 		room = openhab.getJsonSiteMap(host, port, name, id)
 		listing = createListingSensorRoom(room)
-		window = gui.MyWindow(label, listing)
+		window = gui.RoomWindow(label, listing)
 		window.doModal()
 		del window
 	except Exception as e:

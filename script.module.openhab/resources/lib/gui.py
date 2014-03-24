@@ -5,6 +5,10 @@ import xbmcaddon
 import openhab
 from pyxbmct.addonwindow import * 
 
+## Documentation for ButtonSwitch.
+	#@param openHabItem
+#
+#ButtonSwitch with openHabItem and Button from pyxbmct
 class ButtonSwitch:
 	def __init__(self, item):
 		self.item = item
@@ -20,6 +24,10 @@ class ButtonSwitch:
 			self.item.typeItem.state = "OFF"
 			openhab.updateItem(self.item)
 	
+## Documentation for ButtonNumber
+	#@param openHabItem
+#
+#ButtonNumber with openHabItem and Button (pyxbmct) with state (0,25,50,75,100,Uninitialized) 
 class ButtonNumber:
 	def __init__(self, item):
 		self.item = item
@@ -53,7 +61,10 @@ class ButtonNumber:
 			self.component.setLabel('100')
 			self.item.typeItem.state = "100"
 			openhab.updateItem(self.item)
-		
+## Documentation for SliderUI
+	#@param openHabItem
+#
+#SliderUI with openHabItem and Slider (pyxbmct)		
 class SliderUI:
 	def __init__(self, item):
 		self.item = item
@@ -71,6 +82,10 @@ class SliderUI:
 		except (RuntimeError, SystemError):
 			pass
 
+## Documentation for LabelUI
+	#@param openHabItem
+#
+#LabelUI with openHabItem and Label(pyxbmct)
 class LabelUI:
 	def __init__(self, item):
 		self.item = item
@@ -78,11 +93,17 @@ class LabelUI:
 	def update(self):
 		pass
 
-class MyWindow(AddonDialogWindow):
 
+#RoomWindow build an AddonDialogWindow(pyxbmct)
+class RoomWindow(AddonDialogWindow):
+	## Constructor of Floor.
+	#@param self The object pointer.
+	#@param title The Window title.
+	#@param list an openHabItem List
+	#@return Window
 	def __init__(self, title, list):
 		# You need to call base class' constructor.
-		super(MyWindow, self).__init__(title)
+		super(RoomWindow, self).__init__(title)
 		# Set the window width, height and the grid resolution: 9 rows, 4 columns.
 		self.setGeometry(850, 550, 10,4)
 		self.listUI = []
@@ -107,6 +128,10 @@ class MyWindow(AddonDialogWindow):
 		self.listUI[0].controlUp(buttonValidate)
 		self.listUI[len(self.listUI)-1].controlDown(buttonValidate)
 
+	## Documentation for set_active_controls
+		#@param openHabItem list
+	#
+	#Active controls in the current window 
 	def set_active_controls(self, list):
 		self.i=1
 		for item in list:
@@ -131,6 +156,11 @@ class MyWindow(AddonDialogWindow):
 			if self.tmp.__class__.__name__ == "ButtonSwitch" or self.tmp.__class__.__name__ == "ButtonNumber":
 				self.listUI.append(self.tmp.component)
 		
+	## Documentation for set_active_controls
+		#@param openHabItem
+		#@return itemUI
+	#
+	#Return an itemUI 
 	def getUI(self, item):
 		print(item.typeItem.__class__.__name__)
 		if item.typeItem.__class__.__name__ == "Switch":
@@ -149,7 +179,9 @@ class MyWindow(AddonDialogWindow):
 			return LabelUI(item)
 		else:
 			return LabelUI(item)
-			
+		
+	## Documentation for setNavigationItem
+	#enable the navigation beetween generate button 
 	def setNavigationItem(self):
 		for i in range(len(self.listUI)):
 				if i < len(self.listUI)-1:
