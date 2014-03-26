@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.openhab" name="My Home" version="1.0.0" provider-name="xbmcRicmGrenoble">
+<addon id="script.module.openhab" name="My Home" version="1.0.0" provider-name="Bianco Jean-François, Poustis Rebecca">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="xbmc.gui" version="2.11"/>
@@ -9,15 +9,15 @@
   </extension>
   <extension point="xbmc.python.module" library="resources/lib"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Openhab module</summary>
-    <description lang="en"></description>
-    <disclaimer lang="en"></disclaimer>
-    <language></language>
+    <summary lang="en">Plugin Openhab</summary>
+    <description lang="en">XBMC OpenHab plugin is basically designed for automated accomodations.[CR]Browse your housing floors and rooms,check all your captors state and adjust them as much as you want.[CR]With OpenHab, switch off the lights in your bedrooms or turn the heat on in the bathroom from your computer !</description>
+    <disclaimer lang="en">For requests or general questions please send a email to xbmc_ricm5@googlegroups.com.</disclaimer>
+    <language>en fr</language>
     <platform>all</platform>
     <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
     <forum></forum>
-    <website></website>
-    <email></email>
-    <source></source>
+    <website>http://air.imag.fr/index.php/Extensions_XBMC#Plugin_OpenHab</website>
+    <email>xbmc_ricm5@googlegroups.com</email>
+    <source>https://bitbucket.org/xbmcproject/xbmc-openhab-plugin/src</source>
   </extension>
 </addon>
